@@ -20,7 +20,7 @@ export class JobService {
     const exist = this.schedulerRegistry.doesExist('cron', name);
     let job: CronJob;
     if (!exist) {
-      const date = new Date(Date.now() + 30 * 1000);
+      const date = new Date(Date.now() + 60 * 1000);
       const time = `${date.getMinutes()} ${date.getHours()} ${date.getDate()} ${date.getMonth()} *`;
       this.logger.debug(`Time: ${time}`);
       job = new CronJob(

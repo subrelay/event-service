@@ -6,6 +6,7 @@ export enum JobEvent {
   CREATE = 'job.create',
   DELETE_OUTDATED = 'job.deleteOutdated',
   READ_ALL = 'job.readAllJobs',
+  DELETE_ALL = 'job.deleteAllJobs',
 }
 
 export enum JobName {
