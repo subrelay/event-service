@@ -50,5 +50,4 @@ jobs:
           source ~/.nvm/nvm.sh
           npm install
           npm run build
-          npm run typeorm migration:run
           pm2 restart event-service-stg
