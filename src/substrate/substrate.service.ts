@@ -101,10 +101,12 @@ export class SubstrateService implements OnModuleInit {
       },
       {
         removeOnComplete: true,
+        removeOnFail: true,
+        timeout: 10 * 60 * 1000, // 10 minutes
         jobId: `${chainUuid}_${hash}`,
       },
     );
 
-    console.log(`Send block hash ${hash} to block queue`);
+    this.logger.debug(`[${chainId}] Sent block to block queue`);
   }
 }

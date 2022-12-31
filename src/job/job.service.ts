@@ -22,6 +22,7 @@ export class JobService {
     if (!exist) {
       const date = new Date(Date.now() + 30 * 1000);
       const time = `${date.getMinutes()} ${date.getHours()} ${date.getDate()} ${date.getMonth()} *`;
+      this.logger.debug(`Time: ${time}`);
       job = new CronJob(
         time,
         async () => {
