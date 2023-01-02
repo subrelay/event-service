@@ -14,17 +14,10 @@ export class SubstrateService implements OnModuleInit {
     private eventEmitter: EventEmitter2,
   ) {}
 
-  async onModuleInit() {
-    await this.eventQueue.removeJobs('*');
-    this.logger.debug('Removed all data in queue');
-  }
+  async onModuleInit() {}
 
   async sendEvent(payload: any) {
     return this.eventQueue.add(payload);
-  }
-
-  getChainConfig(): string {
-    return 'wss://rpc.polkadot.io';
   }
 
   async createAPI(rpc: string): Promise<ApiPromise> {
@@ -33,7 +26,6 @@ export class SubstrateService implements OnModuleInit {
   }
 
   async subscribeNewHeads(rpc: string, chainId: string, chainUuid: string) {
-    this.logger.debug(`subscribe new heads`);
     const wsProvider = new WsProvider(rpc);
     const api = await ApiPromise.create({ provider: wsProvider });
     await api.rpc.chain.subscribeFinalizedHeads((lastHeader) => {
