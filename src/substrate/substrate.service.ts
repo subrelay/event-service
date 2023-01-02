@@ -1,5 +1,5 @@
 import { InjectQueue } from '@nestjs/bull';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bull';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { EventRecord } from '@polkadot/types/interfaces';
@@ -7,14 +7,12 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { ChainEvent } from 'src/common/type';
 
 @Injectable()
-export class SubstrateService implements OnModuleInit {
+export class SubstrateService {
   private readonly logger = new Logger(SubstrateService.name);
   constructor(
     @InjectQueue('block') private eventQueue: Queue,
     private eventEmitter: EventEmitter2,
   ) {}
-
-  async onModuleInit() {}
 
   async sendEvent(payload: any) {
     return this.eventQueue.add(payload);
