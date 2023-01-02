@@ -31,7 +31,7 @@ jobs:
           node-version: 18.x
       - run: npm ci
       - run: npm run build
-  deploy-stg:
+  deploy:
     needs: [build, lint]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -50,4 +50,4 @@ jobs:
           source ~/.nvm/nvm.sh
           npm install
           npm run build
-          pm2 restart event-service-stg
+          pm2 restart event-service

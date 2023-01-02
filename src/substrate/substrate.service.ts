@@ -1,5 +1,5 @@
 import { InjectQueue } from '@nestjs/bull';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bull';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { EventRecord } from '@polkadot/types/interfaces';
@@ -7,24 +7,15 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { ChainEvent } from 'src/common/type';
 
 @Injectable()
-export class SubstrateService implements OnModuleInit {
+export class SubstrateService {
   private readonly logger = new Logger(SubstrateService.name);
   constructor(
     @InjectQueue('block') private eventQueue: Queue,
     private eventEmitter: EventEmitter2,
   ) {}
 
-  async onModuleInit() {
-    await this.eventQueue.removeJobs('*');
-    this.logger.debug('Removed all data in queue');
-  }
-
   async sendEvent(payload: any) {
     return this.eventQueue.add(payload);
-  }
-
-  getChainConfig(): string {
-    return 'wss://rpc.polkadot.io';
   }
 
   async createAPI(rpc: string): Promise<ApiPromise> {
@@ -33,7 +24,6 @@ export class SubstrateService implements OnModuleInit {
   }
 
   async subscribeNewHeads(rpc: string, chainId: string, chainUuid: string) {
-    this.logger.debug(`subscribe new heads`);
     const wsProvider = new WsProvider(rpc);
     const api = await ApiPromise.create({ provider: wsProvider });
     await api.rpc.chain.subscribeFinalizedHeads((lastHeader) => {
@@ -102,7 +92,7 @@ export class SubstrateService implements OnModuleInit {
       {
         removeOnComplete: true,
         removeOnFail: true,
-        timeout: 10 * 60 * 1000, // 10 minutes
+        timeout: 5 * 60 * 1000, // 10 minutes
         jobId: `${chainUuid}_${hash}`,
       },
     );
