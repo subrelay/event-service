@@ -102,7 +102,7 @@ export class SubstrateService implements OnModuleInit {
       {
         removeOnComplete: true,
         removeOnFail: true,
-        timeout: 10 * 60 * 1000, // 10 minutes
+        timeout: 5 * 60 * 1000, // 10 minutes
         jobId: `${chainUuid}_${hash}`,
       },
     );
