@@ -4,7 +4,7 @@ import { Queue } from 'bull';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { EventRecord } from '@polkadot/types/interfaces';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { ChainEvent } from 'src/common/type';
+import { ChainEvent } from '../common/type';
 
 @Injectable()
 export class SubstrateService {

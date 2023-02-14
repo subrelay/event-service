@@ -4,7 +4,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Cron } from '@nestjs/schedule';
 import { isEmpty, map } from 'lodash';
 import { Client } from 'pg';
-import { JobEvent, JobName } from 'src/common/type';
+import { JobEvent, JobName } from '../common/type';
 
 @Injectable()
 export class DbService implements OnModuleInit {
