@@ -2,8 +2,8 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { CronJob } from 'cron';
-import { JobEvent, JobName } from 'src/common/type';
-import { SubstrateService } from 'src/substrate/substrate.service';
+import { SubstrateService } from '../substrate/substrate.service';
+import { JobEvent, JobName } from '../common/type';
 
 @Injectable()
 export class JobService {
