@@ -43,11 +43,13 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          cd ~/event-service
+          cd /subrelay-backend/event-service/
           git reset --hard
           git pull origin main
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
           npm install
           npm run build
-          pm2 restart event-service
+          docker build -t subrelay-event-service .
+          cd ../subrelay-api/
+          docker-compose up -d --build
