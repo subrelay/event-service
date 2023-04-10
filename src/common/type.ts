@@ -1,13 +1,15 @@
 export enum ChainEvent {
-  BLOCK_CREATED = 'chain.block_created',
+  BLOCK_CREATED = 'chain.block.created',
 }
 
 export enum JobEvent {
   CREATE = 'job.create',
-  DELETE_OUTDATED = 'job.deleteOutdated',
-  READ_ALL = 'job.readAllJobs',
+  STOP = 'job.stop',
 }
 
-export enum JobName {
-  WORKFLOW_MONITOR = 'workflow.monitor',
+export class ChainInfo {
+  config: {
+    rpcs: string[];
+  };
+  chainId: string;
 }
