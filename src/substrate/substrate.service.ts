@@ -23,7 +23,7 @@ export class SubstrateService {
     return await ApiPromise.create({ provider: wsProvider });
   }
 
-  async subscribeNewHeads(rpc: string, chainId: string, chainUuid: string) {
+  async subscribeNewHeads(rpc: string, chainId: string) {
     const wsProvider = new WsProvider(rpc);
     const api = await ApiPromise.create({ provider: wsProvider });
     await api.rpc.chain.subscribeFinalizedHeads((lastHeader) => {
@@ -32,7 +32,6 @@ export class SubstrateService {
         rpc,
         lastHeader.hash as unknown as string,
         chainId,
-        chainUuid,
       );
     });
 
@@ -40,12 +39,7 @@ export class SubstrateService {
   }
 
   @OnEvent(ChainEvent.BLOCK_CREATED)
-  async parseBlock(
-    rpc: string,
-    hash: string,
-    chainId: string,
-    chainUuid: string,
-  ) {
+  async parseBlock(rpc: string, hash: string, chainId: string) {
     this.logger.debug(`[${chainId}] BLOCK.CREATED ${hash}`);
 
     const api = await this.createAPI(rpc);
@@ -78,22 +72,20 @@ export class SubstrateService {
 
     await this.eventQueue.add(
       {
-        chainUuid,
+        chainId,
         timestamp,
         hash,
         success,
         events: allRecords.map((record) => ({
-          pallet: record.event.section,
-          name: record.event.method,
+          name: `${record.event.section}.${record.event.method}`,
           data: record.event.data,
-          hash: record.event.hash,
         })),
       },
       {
         removeOnComplete: true,
         removeOnFail: true,
         timeout: 5 * 60 * 1000, // 10 minutes
-        jobId: `${chainUuid}_${hash}`,
+        jobId: hash,
       },
     );
 
