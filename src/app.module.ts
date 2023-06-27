@@ -5,7 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SubstrateModule } from './substrate/substrate.module';
-import { DbModule } from './db/db.module';
 import { JobModule } from './job/job.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/monitoring-error.filter';
@@ -19,13 +18,12 @@ import { AllExceptionsFilter } from './common/monitoring-error.filter';
       useFactory: (configService: ConfigService) => ({
         redis: {
           host: configService.get('REDIS_HOST'),
-          port: 6379,
+          port: configService.get('REDIS_PORT'),
         },
       }),
     }),
     EventEmitterModule.forRoot(),
     SubstrateModule,
-    DbModule,
     JobModule,
   ],
   controllers: [AppController],
