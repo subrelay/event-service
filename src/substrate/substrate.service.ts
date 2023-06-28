@@ -5,13 +5,16 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { EventRecord } from '@polkadot/types/interfaces';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { ChainEvent } from '../common/type';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class SubstrateService {
   private readonly logger = new Logger(SubstrateService.name);
+
   constructor(
     @InjectQueue('block') private eventQueue: Queue,
     private eventEmitter: EventEmitter2,
+    private readonly schedulerRegistry: SchedulerRegistry,
   ) {}
 
   async sendEvent(payload: any) {
@@ -26,14 +29,20 @@ export class SubstrateService {
   async subscribeNewHeads(rpc: string, chainId: string) {
     const wsProvider = new WsProvider(rpc);
     const api = await ApiPromise.create({ provider: wsProvider });
-    await api.rpc.chain.subscribeFinalizedHeads((lastHeader) => {
-      this.eventEmitter.emit(
-        ChainEvent.BLOCK_CREATED,
-        rpc,
-        lastHeader.hash as unknown as string,
-        chainId,
-      );
-    });
+    const unsubscribe = await api.rpc.chain.subscribeFinalizedHeads(
+      (lastHeader) => {
+        if (this.schedulerRegistry.doesExist('cron', chainId)) {
+          this.eventEmitter.emit(
+            ChainEvent.BLOCK_CREATED,
+            rpc,
+            lastHeader.hash as unknown as string,
+            chainId,
+          );
+        } else {
+          unsubscribe();
+        }
+      },
+    );
 
     return true;
   }

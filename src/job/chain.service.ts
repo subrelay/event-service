@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { JobEvent } from '../common/type';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
-import { find } from 'lodash';
+import { find, isEmpty, map } from 'lodash';
 import { notifyError } from '../common/common.util';
 import * as axios from 'axios';
 
@@ -22,21 +22,37 @@ export class ChainService {
     this.logger.debug('Checking chains are ready to monitor');
     const chains = await this.getChains();
 
-    const jobNames = [];
+    let newJobs = [];
+    let deletedJobs = [];
 
+    const currentJobs = [];
     for (const [name] of this.schedulerRegistry.getCronJobs()) {
-      const chain = find(chains, { chainId: name });
-      if (!chain && name !== 'monitor') {
-        this.eventEmitter.emit(JobEvent.STOP, name);
-      } else {
-        jobNames.push(name);
+      if (name !== 'monitor') {
+        currentJobs.push(name);
       }
     }
 
-    chains.forEach((chain) => {
-      if (!jobNames.includes(chain.chainId)) {
-        this.eventEmitter.emit(JobEvent.CREATE, chain.chainId, chain.rpc);
-      }
+    if (isEmpty(currentJobs) && !isEmpty(chains)) {
+      newJobs = chains;
+    }
+
+    if (!isEmpty(currentJobs) && isEmpty(chains)) {
+      deletedJobs = currentJobs;
+    }
+
+    if (!isEmpty(currentJobs) && !isEmpty(chains)) {
+      deletedJobs = currentJobs.filter((e) => !find(chains, { chainId: e }));
+      newJobs = chains.filter((c) => !currentJobs.includes(c.chainId));
+    }
+
+    newJobs.forEach((chain) => {
+      this.eventEmitter.emit(JobEvent.CREATE, chain.chainId, chain.rpc);
+    });
+
+    this.logger.debug({ chains, currentJobs, newJobs, deletedJobs });
+
+    deletedJobs.forEach((name) => {
+      this.eventEmitter.emit(JobEvent.STOP, name);
     });
   }
 
