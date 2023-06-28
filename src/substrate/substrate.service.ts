@@ -31,7 +31,6 @@ export class SubstrateService {
     const api = await ApiPromise.create({ provider: wsProvider });
     const unsubscribe = await api.rpc.chain.subscribeFinalizedHeads(
       (lastHeader) => {
-        this.logger.debug(111111111111);
         if (this.schedulerRegistry.doesExist('cron', chainId)) {
           this.eventEmitter.emit(
             ChainEvent.BLOCK_CREATED,
