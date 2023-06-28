@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { JobEvent } from '../common/type';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
-import { find } from 'lodash';
+import { find, isEmpty } from 'lodash';
 import { notifyError } from '../common/common.util';
 import * as axios from 'axios';
 
@@ -25,9 +25,9 @@ export class ChainService {
     const jobNames = [];
 
     for (const [name] of this.schedulerRegistry.getCronJobs()) {
-      console.log({ name });
-
-      if (name !== 'monitor') {
+      if (name !== 'monitor' && isEmpty(chains)) {
+        this.eventEmitter.emit(JobEvent.STOP, name);
+      } else {
         const chain = find(chains, { chainId: name });
         if (!chain) {
           this.eventEmitter.emit(JobEvent.STOP, name);
