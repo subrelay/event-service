@@ -6,10 +6,3 @@ export enum JobEvent {
   CREATE = 'job.create',
   STOP = 'job.stop',
 }
-
-export class ChainInfo {
-  config: {
-    rpcs: string[];
-  };
-  chainId: string;
-}

@@ -7,16 +7,16 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
 
 # Copy the rest of the project files to the container
 COPY . .
 
 # Build the project
-RUN npm run build
+RUN yarn install
+RUN yarn run build
 
 # Specify the command to run when the container starts
-CMD [ "npm", "start" ]
+CMD [ "yarn", "start:dev" ]
 
 # Expose port 3001 for the application to listen on
 EXPOSE 3001
