@@ -15,6 +15,8 @@ COPY . .
 RUN yarn install
 RUN yarn run build
 
+ENV NODE_OPTIONS=--max-old-space-size=16384
+
 # Specify the command to run when the container starts
 CMD [ "yarn", "start:dev" ]
 
