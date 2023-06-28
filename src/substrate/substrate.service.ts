@@ -40,8 +40,6 @@ export class SubstrateService {
 
   @OnEvent(ChainEvent.BLOCK_CREATED)
   async parseBlock(rpc: string, hash: string, chainId: string) {
-    this.logger.debug(`[${chainId}] BLOCK.CREATED ${hash}`);
-
     const api = await this.createAPI(rpc);
     const [signedBlock, apiAt] = await Promise.all([
       api.rpc.chain.getBlock(hash),

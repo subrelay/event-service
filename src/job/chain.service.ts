@@ -15,7 +15,9 @@ export class ChainService {
     private readonly schedulerRegistry: SchedulerRegistry,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_MINUTE, {
+    name: 'monitor',
+  })
   async monitorWorkers() {
     this.logger.debug('Checking chains are ready to monitor');
     const chains = await this.getChains();
@@ -24,7 +26,7 @@ export class ChainService {
 
     for (const [name] of this.schedulerRegistry.getCronJobs()) {
       const chain = find(chains, { chainId: name });
-      if (!chain) {
+      if (!chain && name !== 'monitor') {
         this.eventEmitter.emit(JobEvent.STOP, name);
       } else {
         jobNames.push(name);
@@ -45,7 +47,7 @@ export class ChainService {
         `${process.env.API_BASE_URL}/workers`,
         {
           maxRedirects: 3,
-          timeout: 5000,
+          timeout: 2000,
         },
       );
 
