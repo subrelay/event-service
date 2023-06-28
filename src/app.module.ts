@@ -8,6 +8,7 @@ import { SubstrateModule } from './substrate/substrate.module';
 import { JobModule } from './job/job.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/monitoring-error.filter';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -19,10 +20,12 @@ import { AllExceptionsFilter } from './common/monitoring-error.filter';
         redis: {
           host: configService.get('REDIS_HOST'),
           port: configService.get('REDIS_PORT'),
+          password: configService.get('REDIS_PASSWORD'),
         },
       }),
     }),
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(), 
     SubstrateModule,
     JobModule,
   ],
