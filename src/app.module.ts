@@ -25,7 +25,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       }),
     }),
     EventEmitterModule.forRoot(),
-    ScheduleModule.forRoot(), 
+    ScheduleModule.forRoot(),
     SubstrateModule,
     JobModule,
   ],
