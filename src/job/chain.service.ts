@@ -25,11 +25,15 @@ export class ChainService {
     const jobNames = [];
 
     for (const [name] of this.schedulerRegistry.getCronJobs()) {
-      const chain = find(chains, { chainId: name });
-      if (!chain && name !== 'monitor') {
-        this.eventEmitter.emit(JobEvent.STOP, name);
-      } else {
-        jobNames.push(name);
+      console.log({ name });
+
+      if (name !== 'monitor') {
+        const chain = find(chains, { chainId: name });
+        if (!chain) {
+          this.eventEmitter.emit(JobEvent.STOP, name);
+        } else {
+          jobNames.push(name);
+        }
       }
     }
 
