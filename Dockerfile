@@ -1,10 +1,11 @@
-FROM node:18
+FROM node:18-alpine
 
 # Set the working directory in the container
 WORKDIR /app
 
 # Copy the package.json and package-lock.json to the container
-COPY package*.json ./
+COPY package.json yarn.lock ./
+RUN yarn install --production --frozen-lockfile
 
 # Install dependencies
 
@@ -12,13 +13,10 @@ COPY package*.json ./
 COPY . .
 
 # Build the project
-RUN yarn install
-RUN yarn run build
-
-ENV NODE_OPTIONS=--max-old-space-size=16384
+RUN yarn build
 
 # Specify the command to run when the container starts
-CMD [ "yarn", "start:dev" ]
+CMD ["node", "--max-old-space-size=300", "dist/main.js"]
 
 # Expose port 3001 for the application to listen on
 EXPOSE 3001

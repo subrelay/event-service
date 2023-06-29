@@ -29,7 +29,7 @@ export class JobService {
       time,
       async () => {
         this.logger.debug(`Started a watcher for chain ${name}`);
-        await this.substrateService.subscribeNewHeads(rpc, name);
+        await this.substrateService.monitorChain(rpc, name);
       },
       () => this.logger.debug('Done'),
     );
