@@ -107,7 +107,7 @@ export class SubstrateService {
     );
 
     this.logger.debug(
-      `[${chainId}] Sent block to block queue. Total: ${await this.eventQueue.getActiveCount()} messages`,
+      `[${chainId}] Sent block to block queue.`,
     );
   }
 }
