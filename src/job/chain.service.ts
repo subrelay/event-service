@@ -15,7 +15,7 @@ export class ChainService {
     private readonly schedulerRegistry: SchedulerRegistry,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE, {
+  @Cron(CronExpression.EVERY_10_SECONDS, {
     name: 'monitor',
   })
   async monitorWorkers() {
@@ -63,7 +63,7 @@ export class ChainService {
         `${process.env.API_BASE_URL}/workers`,
         {
           maxRedirects: 3,
-          timeout: 10000,
+          timeout: 3000,
         },
       );
 
