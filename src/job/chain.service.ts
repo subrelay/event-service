@@ -63,7 +63,7 @@ export class ChainService {
         `${process.env.API_BASE_URL}/workers`,
         {
           maxRedirects: 3,
-          timeout: 2000,
+          timeout: 10000,
         },
       );
 
