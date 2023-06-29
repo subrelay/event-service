@@ -53,3 +53,20 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/subrelay/event-service/main:latest
+  deploy-prd:
+    needs: [release]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and deploy node app
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd subrelay-backend/subrelay-api
+            git checkout main
+            git reset --hard
+            git pull
+            docker-compose -f docker-compose.main.yml up -d  --build
