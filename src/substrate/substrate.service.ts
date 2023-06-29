@@ -10,6 +10,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 @Injectable()
 export class SubstrateService {
   private readonly logger = new Logger(SubstrateService.name);
+  private apiArray: { api: ApiPromise; name: String }[] = [];
 
   constructor(
     @InjectQueue('block') private eventQueue: Queue,
@@ -17,20 +18,24 @@ export class SubstrateService {
     private readonly schedulerRegistry: SchedulerRegistry,
   ) {}
 
-  async sendEvent(payload: any) {
-    return this.eventQueue.add(payload);
+  async getApiByName(name: string, rpc: string) {
+    let api = this.apiArray.find((api) => api.name === name)?.api;
+    if (!api) {
+      api = await this.createAPI(rpc);
+      this.apiArray.push({ api, name });
+    }
+
+    return api;
   }
 
-  async createAPI(rpc: string): Promise<ApiPromise> {
-    const wsProvider = new WsProvider(rpc);
-    return await ApiPromise.create({ provider: wsProvider });
+  removeApi(name: string) {
+    this.apiArray = this.apiArray.filter((api) => api.name !== name);
   }
 
-  async subscribeNewHeads(rpc: string, chainId: string) {
-    const wsProvider = new WsProvider(rpc);
-    const api = await ApiPromise.create({ provider: wsProvider });
+  async monitorChain(rpc: string, chainId: string) {
+    const api = await this.getApiByName(chainId, rpc);
     const unsubscribe = await api.rpc.chain.subscribeFinalizedHeads(
-      (lastHeader) => {
+      async (lastHeader) => {
         if (this.schedulerRegistry.doesExist('cron', chainId)) {
           this.eventEmitter.emit(
             ChainEvent.BLOCK_CREATED,
@@ -40,16 +45,21 @@ export class SubstrateService {
           );
         } else {
           unsubscribe();
+          await api.disconnect();
+          this.removeApi(chainId);
         }
       },
     );
+  }
 
-    return true;
+  async createAPI(rpc: string): Promise<ApiPromise> {
+    const wsProvider = new WsProvider(rpc);
+    return await ApiPromise.create({ provider: wsProvider });
   }
 
   @OnEvent(ChainEvent.BLOCK_CREATED)
   async parseBlock(rpc: string, hash: string, chainId: string) {
-    const api = await this.createAPI(rpc);
+    const api = await this.getApiByName(chainId, rpc);
     const [signedBlock, apiAt] = await Promise.all([
       api.rpc.chain.getBlock(hash),
       api.at(hash),
@@ -96,6 +106,8 @@ export class SubstrateService {
       },
     );
 
-    this.logger.debug(`[${chainId}] Sent block to block queue`);
+    this.logger.debug(
+      `[${chainId}] Sent block to block queue. Total: ${await this.eventQueue.getActiveCount()} messages`,
+    );
   }
 }
