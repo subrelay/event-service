@@ -55,7 +55,7 @@ export class SubstrateService {
   }
 
   async createAPI(rpc: string): Promise<ApiPromise> {
-    const wsProvider = new WsProvider(rpc);
+    const wsProvider = new WsProvider(rpc, 10, {}, 5000);
     return await ApiPromise.create({ provider: wsProvider });
   }
 
