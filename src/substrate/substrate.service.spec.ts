@@ -81,7 +81,7 @@ describe('SubstrateService', () => {
     },
   ];
   jest.mock('@polkadot/api', () => ({
-    WsProvider: jest.fn(),
+    WsProvider: jest.fn().mockReturnValue(undefined),
     ApiPromise: {
       create: jest.fn().mockImplementation(() => ({
         disconnect: jest.fn(),
