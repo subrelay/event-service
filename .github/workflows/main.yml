@@ -40,7 +40,7 @@ jobs:
         with:
           node-version: 18.x
       - run: yarn install
-      - run: yarn test --detectOpenHandles
+      - run: yarn test --runInBand --detectOpenHandles
   release:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
