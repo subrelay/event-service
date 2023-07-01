@@ -1,6 +1,6 @@
 import * as Rollbar from 'rollbar';
 
-export async function notifyError(error: Error, msg = '') {
+export async function notifyError(error: Error) {
   const rollbarAccessToken = process.env.ROLLBAR_ACCESS_TOKEN;
   if (rollbarAccessToken) {
     const rollbar = new Rollbar({
