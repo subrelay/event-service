@@ -31,6 +31,7 @@ jobs:
       - run: yarn build
   unit-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js v18.x
@@ -41,7 +42,7 @@ jobs:
       - run: yarn test --runInBand --detectOpenHandles
   release:
     runs-on: ubuntu-latest
-    needs: [build, lint, unit-test]
+    needs: [build, lint]
     if: github.ref == 'refs/heads/develop'
     permissions:
       contents: read

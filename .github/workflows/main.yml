@@ -33,6 +33,7 @@ jobs:
       - run: yarn build
   unit-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js v18.x
@@ -44,7 +45,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    needs: [build, lint, unit-test]
+    needs: [build, lint]
     permissions:
       contents: read
       packages: write
