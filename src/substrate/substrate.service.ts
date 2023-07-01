@@ -10,13 +10,15 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 @Injectable()
 export class SubstrateService {
   private readonly logger = new Logger(SubstrateService.name);
-  private apiArray: { api: ApiPromise; name: String }[] = [];
+  private apiArray: { api: ApiPromise; name: string }[] = [];
 
   constructor(
     @InjectQueue('block') private eventQueue: Queue,
     private eventEmitter: EventEmitter2,
     private readonly schedulerRegistry: SchedulerRegistry,
-  ) {}
+  ) {
+    this.apiArray = [];
+  }
 
   async getApiByName(name: string, rpc: string) {
     let api = this.apiArray.find((api) => api.name === name)?.api;
@@ -106,8 +108,6 @@ export class SubstrateService {
       },
     );
 
-    this.logger.debug(
-      `[${chainId}] Sent block to block queue.`,
-    );
+    this.logger.debug(`[${chainId}] Sent block to block queue.`);
   }
 }
