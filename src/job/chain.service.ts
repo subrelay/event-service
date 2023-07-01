@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { JobEvent } from '../common/type';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
-import { find, isEmpty, map } from 'lodash';
+import { find, isEmpty } from 'lodash';
 import { notifyError } from '../common/common.util';
 import * as axios from 'axios';
 
@@ -48,8 +48,6 @@ export class ChainService {
     newJobs.forEach((chain) => {
       this.eventEmitter.emit(JobEvent.CREATE, chain.chainId, chain.rpc);
     });
-
-    this.logger.debug({ chains, currentJobs, newJobs, deletedJobs });
 
     deletedJobs.forEach((name) => {
       this.eventEmitter.emit(JobEvent.STOP, name);

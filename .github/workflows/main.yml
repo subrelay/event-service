@@ -31,6 +31,16 @@ jobs:
           node-version: 18.x
       - run: yarn install
       - run: yarn build
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js v18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - run: yarn install
+      - run: yarn test --runInBand --detectOpenHandles
   release:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
